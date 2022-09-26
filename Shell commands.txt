@@ -1,0 +1,114 @@
+>>> from django.contrib.auth.models import User
+>>> from django.db import models
+>>> from NewsPortal.models import *
+
+
+#Создать двух пользователей
+>>> egor_user = User.objects.create_user(username='Egor', password='123456')
+>>> stacy_user = User.objects.create_user(username='Stacy', password='123456') 
+
+#Создать два объекта модели Author, связанные с пользователями
+>>> egor = Author.objects.create(user=egor_user)
+>>> stacy = Author.objects.create(user=stacy_user)
+
+#Добавить 4 категории в модель Category
+>>> Category.objects.create(category_name='Nature') 
+>>> Category.objects.create(category_name='Sport')  
+>>> Category.objects.create(category_name='IT')
+>>> Category.objects.create(category_name='Science')
+
+#Добавить 2 статьи и 1 новость
+>>> author1 = Author.objects.get(id=1)
+>>> author2 = Author.objects.get(id=2)
+
+>>> Post.objects.create(author=author1, categoryType='NW', header='title', content = 'text')
+>>> Post.objects.create(author=author1, categoryType='AR', header='title', content = 'text')
+>>> Post.objects.create(author=author2, categoryType='AR', header='title', content = 'text')
+
+#Присвоить им категории (как минимум в одной статье/новости должно быть не меньше 2 категорий)
+>>> Post.objects.get(id=1).category.add(Category.objects.get(id=1))     
+>>> Post.objects.get(id=1).category.add(Category.objects.get(id=2)) 
+>>> Post.objects.get(id=2).category.add(Category.objects.get(id=3)) 
+>>> Post.objects.get(id=3).category.add(Category.objects.get(id=4)) 
+
+#Создать как минимум 4 комментария к разным объектам модели Post (в каждом объекте должен быть как минимум один комментарий)
+>>> Comment.objects.create(post=Post.objects.get(id=1), user=Author.objects.get(id=1).user, comment_text='test first comment')
+>>> Comment.objects.create(post=Post.objects.get(id=1), user=Author.objects.get(id=2).user, comment_text='test second comment')
+<Comment: Comment object (2)>
+>>> Comment.objects.create(post=Post.objects.get(id=2), user=Author.objects.get(id=1).user, comment_text='test third comment')
+<Comment: Comment object (3)>
+>>> Comment.objects.create(post=Post.objects.get(id=3), user=Author.objects.get(id=2).user, comment_text='test fourth comment')
+
+#Применяя функции like() и dislike() к статьям/новостям и комментариям, скорректировать рейтинги этих объектов.
+>>> Comment.objects.get(id=1).like()
+...
+>>> Comment.objects.get(id=1).like()
+>>> Comment.objects.get(id=1).dislike() 
+>>> Comment.objects.get(id=1).dislike()
+
+
+>>> Comment.objects.get(id=2).like()    
+...
+>>> Comment.objects.get(id=2).like()
+>>> Comment.objects.get(id=2).dislike()
+
+
+>>> Comment.objects.get(id=3).dislike()
+>>> Comment.objects.get(id=3).dislike()
+>>> Comment.objects.get(id=3).like()    
+...
+>>> Comment.objects.get(id=3).like()
+
+
+>>> Comment.objects.get(id=4).like() 
+...
+>>> Comment.objects.get(id=4).like()
+>>> Comment.objects.get(id=4).dislike() 
+...
+>>> Comment.objects.get(id=4).dislike()
+
+
+>>> Post.objects.get(id=1).like()
+...
+>>> Post.objects.get(id=1).like()
+
+
+>>> Post.objects.get(id=2).like() 
+...
+>>> Post.objects.get(id=2).like()
+>>> Post.objects.get(id=2).dislike() 
+...
+>>> Post.objects.get(id=2).dislike()
+
+
+>>> Post.objects.get(id=3).dislike() 
+>>> Post.objects.get(id=3).dislike()
+>>> Post.objects.get(id=3).dislike()
+
+#Обновить рейтинги пользователей.
+>>> a1 = Author.objects.get(id=1)
+>>> a1.update_rating()
+>>> a2 = Author.objects.get(id=2)
+>>> a2.update_rating()
+
+#Вывести username и рейтинг лучшего пользователя (применяя сортировку и возвращая поля первого объекта).
+
+>>> rate = Author.objects.order_by('-_auth_rating')[0]
+>>> rate.user.username
+>>> rate._auth_rating 
+
+#Вывести дату добавления, username автора, рейтинг, заголовок и превью лучшей статьи, основываясь на лайках/дислайках к этой статье.
+>>> top_post = Post.objects.order_by('-_post_rating')[0] 
+>>> top_post.time_post.date()                            
+>>> top_post.author.user.username                        
+>>> top_post._post_rating        
+>>> top_post.title                
+>>> top_post.header
+>>> top_post.preview()
+
+#Вывести все комментарии (дата, пользователь, рейтинг, текст) к этой статье.
+>>> all_comments_post = top_post.comment_set.all()
+>>> all_comments_post.values('user', 'comment_time', 'comment_text', '_comment_rating')
+
+
+
