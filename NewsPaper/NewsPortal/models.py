@@ -1,5 +1,6 @@
 from django.contrib.auth.models import User
 from django.db import models
+from django.urls import  reverse
 
 
 class Author(models.Model):
@@ -32,7 +33,7 @@ class Post(models.Model):
         (ARTICLE, 'Статья'),
     )
 
-    categoryType = models.CharField(max_length=2, choices=CATEGORY_CHOICES, default=ARTICLE)
+    categoryType = models.CharField(max_length=2, choices=CATEGORY_CHOICES, default=NEWS)
     time_post = models.DateTimeField(auto_now_add=True)
     header = models.CharField(max_length=255)
     content = models.TextField()
@@ -55,6 +56,9 @@ class Post(models.Model):
     def preview(self):
         _preview = self.content[:125] + "..."
         return _preview
+
+    def get_absolute_url(self):
+        return reverse('news_detail', args=[str(self.id)])
 
 
 class PostCategory(models.Model):  # binding model many to many Post - Category

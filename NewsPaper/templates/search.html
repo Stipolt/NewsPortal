@@ -4,20 +4,19 @@
 {% load custom_tags %}
 
 {% block title %}
-News
+News search
 {% endblock title %}
 
 {% block content %}
-    <h1>НОВОСТИ</h1>
-    <h3>На {{ time_now|date:'d M Y' }}</h3>
-    <h4>{{posts | length}} новых записей</h4>
-    <button onclick="window.location.href = 'http://localhost:8000/news/search/';">Поиск новостей</button>
-    <button onclick="window.location.href = 'http://localhost:8000/news/create/';">Создать новость</button>
+    <h1>Поиск новостей</h1>
 
-<!--    <form action="" method="get">-->
-<!--        {{ filterset.form.as_p }}-->
-<!--        <input type="submit" value="Найти" />-->
-<!--    </form>-->
+    <form action="" method="get">
+        {{ filterset.form.as_p }}
+        <input type="submit" value="Найти" />
+    </form>
+
+    <button onclick="window.location.href = 'http://localhost:8000/news/';">Ко всем новостям</button>
+
 
 
     <hr>
@@ -46,7 +45,7 @@ News
        <h2>No news</h2>
     {% endif %}
     {% if page_obj.has_previous %}
-        <a href="?{% url_replace page=1 %}">1</a>
+      <a href="?{% url_replace page=1 %}">1</a>
         {% if page_obj.previous_page_number != 1 %}
             ...
             <a href="?{% url_replace page=page_obj.previous_page_number %}">{{ page_obj.previous_page_number }}</a>

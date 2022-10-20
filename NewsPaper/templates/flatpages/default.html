@@ -5,7 +5,10 @@
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
         <meta name="description" content="" />
         <meta name="author" content="" />
-        <title>Bare - Start Bootstrap Template</title>
+        <title>
+            {% block title %}
+            {% endblock title %}
+        </title>
         <!-- Favicon-->
         <link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
         <!-- Core theme CSS (includes Bootstrap)-->
@@ -31,7 +34,13 @@
                            </a>
                        </li>
                        <li class="nav-item">
-                           <a class="nav-link" href="/about/">About</a>
+                           <a class="nav-link" href="/news/search/">Search</a>
+                       </li>
+                       <li class="nav-item">
+                           <a class="nav-link" href="/news/create/">Создать новость</a>
+                       </li>
+                       <li class="nav-item">
+                           <a class="nav-link" href="/news/article/create/">Создать статью</a>
                        </li>
                    </ul>
                </div>
