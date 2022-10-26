@@ -8,6 +8,8 @@
     {{ form.as_p }}
     <input type="submit" value="Save" />
 </form>
-<button onclick="window.location.href = 'http://localhost:8000/news/';">Вернуться назад</button>
-
+<button onclick="window.location.href = 'http://127.0.0.1:8000/news/';">Вернуться назад</button>
+    {% if is_not_author %}
+        <button> <a href="news/upgrade/"> Стать автором!</a> </button>
+    {% endif %}
 {% endblock content %}

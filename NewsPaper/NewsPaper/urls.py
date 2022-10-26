@@ -20,11 +20,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('pages/', include('django.contrib.flatpages.urls')),
     path('news/', include('NewsPortal.urls')),
-    # path('articles/', include('NewsPortal.urls'))
-    # хотел добавить 2 главные страницы, но, мне кажется,
-    # не очень разумно делать два разных адреса, которые выведут одно и то же, поэтому наложил article на news.
-    # Да, выглядит (news/article/create) не так красиво, как (news/create), но лучше я в будущем добавлю
-    # /home от которой уже буду наследовать и /news, и /articles.
-
-
+    path('accounts/', include('allauth.urls')),
+    # path('', include('protect.urls')),
+    # path('sign/', include('sign.urls')),
 ]

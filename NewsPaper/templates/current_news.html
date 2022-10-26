@@ -1,12 +1,14 @@
 {% extends 'flatpages/default.html' %}
 
+{% load custom_filters %}
+
 {% block title %}
 News
 {% endblock title %}
 
 {% block content %}
-<h1>{{ post.header  }}</h1>
 <h4>{{ post.time_post | date:'d M Y' }}</h4>
-<h2>{{ post.content }}</h2>
-<button onclick="window.location.href = 'http://localhost:8000/news/';">Ко всем новостям</button>
+<h1>{{ post.header | censor }}</h1>
+<h2>{{ post.content | censor }}</h2>
+<button onclick="window.location.href = 'http://127.0.0.1:8000/news/';">Ко всем новостям</button>
 {% endblock content %}

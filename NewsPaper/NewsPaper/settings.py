@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-&(s@#!5lc2j+$^u)8)_#&$nw^ndzs3#9+#=^dpeiln4$&vloso
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['127.0.0.1']
 
 
 # Application definition
@@ -42,7 +42,11 @@ INSTALLED_APPS = [
     'accounts',
     'NewsPortal',
     'fpages',
-    'django_filters'
+    'django_filters',
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.google',
 ]
 
 SITE_ID = 1
@@ -76,6 +80,22 @@ TEMPLATES = [
     },
 ]
 
+
+AUTHENTICATION_BACKENDS = [
+    # Needed to login by username in Django admin, regardless of `allauth`
+    'django.contrib.auth.backends.ModelBackend',
+    # `allauth` specific authentication methods, such as login by e-mail
+    'allauth.account.auth_backends.AuthenticationBackend',
+]
+
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_UNIQUE_EMAIL = True
+ACCOUNT_USERNAME_REQUIRED = False
+ACCOUNT_AUTHENTICATION_METHOD = 'email'
+ACCOUNT_EMAIL_VERIFICATION = 'none'
+
+ACCOUNT_FORMS = {'signup': 'NewsPortal.forms.BasicSignupForm'}
+
 WSGI_APPLICATION = 'NewsPaper.wsgi.application'
 
 
@@ -84,12 +104,8 @@ WSGI_APPLICATION = 'NewsPaper.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'ForDjango',
-        'USER': 'postgres',
-        'PASSWORD': '112233',
-        'HOST': 'localhost',
-        'PORT': '5432',
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
 
@@ -130,9 +146,15 @@ USE_TZ = False
 
 STATIC_URL = 'static/'
 
+LOGIN_URL = '/accounts/login/'
+
+LOGIN_REDIRECT_URL = 'http://127.0.0.1:8000/news/'
+LOGOUT_REDIRECT_URL = 'http://127.0.0.1:8000/news/'
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 STATICFILES_DIRS = [BASE_DIR / "static"]
+
