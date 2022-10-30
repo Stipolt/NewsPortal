@@ -10,5 +10,7 @@ News
 <h4>{{ post.time_post | date:'d M Y' }}</h4>
 <h1>{{ post.header | censor }}</h1>
 <h2>{{ post.content | censor }}</h2>
+<h1><strong>Категория: {{ category }}</strong></h1><br>
+<button> <a href="http://127.0.0.1:8000/news/categories/"> Подписаться на эту и другие категории </a> </button>
 <button onclick="window.location.href = 'http://127.0.0.1:8000/news/';">Ко всем новостям</button>
 {% endblock content %}

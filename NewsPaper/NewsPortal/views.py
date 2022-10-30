@@ -1,4 +1,3 @@
-from django.shortcuts import render
 from datetime import datetime
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy
@@ -6,11 +5,27 @@ from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMix
 from django.shortcuts import redirect
 from django.contrib.auth.models import Group
 from django.contrib.auth.decorators import login_required
+from django.core.mail import EmailMultiAlternatives
+from django.template.loader import render_to_string
 
-
-from .models import Post
+from .models import Post, Category, PostCategory
 from .filters import NewsFilter
 from .forms import NewsForm
+
+
+def send_to_sub(post, email_subs):
+    html_content = render_to_string(
+        'send_mail_post.html',
+        {'post': post}
+    )
+    msg = EmailMultiAlternatives(
+        subject=f'{post.header} ',
+        body=f'{post.content}',
+        from_email='egorkabox@yandex.ru',
+        to=email_subs,
+    )
+    msg.attach_alternative(html_content, "text/html")
+    msg.send()
 
 
 class NewsList(ListView):
@@ -38,6 +53,13 @@ class NewsDetail(DetailView):
     template_name = 'current_news.html'
     context_object_name = 'post'
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        pk = self.kwargs['pk']
+        category_id = PostCategory.objects.filter(post_id=pk).values('category_id')[0]['category_id']
+        context['category'] = Category.objects.values('category_name')[category_id-1]['category_name']
+        return context
+
 
 class NewsSearch(NewsList):
     template_name = 'search.html'
@@ -50,9 +72,17 @@ class NewsCreate(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
     template_name = 'news_edit.html'
 
     def form_valid(self, form):
-        Post = form.save(commit=False)
-        Post.categoryType = "NW"
-        return super().form_valid(form)
+        post = form.save(commit=False)
+        post.categoryType = "NW"
+        post = super().form_valid(form)
+        categories = self.object.category.all()
+        emails = []
+        for category in categories:
+            for sub in category.subscribers.all():
+                email_ = sub.email
+                emails.append(email_)
+        send_to_sub(self.object, emails)
+        return post
 
 
 class NewsUpdate(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
@@ -65,7 +95,7 @@ class NewsUpdate(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
 class NewsDelete(LoginRequiredMixin, DeleteView):
     model = Post
     template_name = 'news_delete.html'
-    success_url = reverse_lazy('news_list')
+    success_url = reverse_lazy('news')
 
 
 class ArticleCreate(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
@@ -77,7 +107,15 @@ class ArticleCreate(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
     def form_valid(self, form):
         Post = form.save(commit=False)
         Post.categoryType = "AR"
-        return super().form_valid(form)
+        post = super().form_valid(form)
+        categories = self.object.category.all()
+        emails = []
+        for category in categories:
+            for sub in category.subscribers.all():
+                email_ = sub.email
+                emails.append(email_)
+        send_to_sub(self.object, emails)
+        return post
 
 
 class ArticleUpdate(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
@@ -93,10 +131,34 @@ class ArticleDelete(LoginRequiredMixin, DeleteView):
     success_url = reverse_lazy('news_list')
 
 
+class CategoryView(LoginRequiredMixin, ListView):
+    model = Category
+    template_name = 'categories.html'
+    context_object_name = 'categorys'
+    queryset = Category.objects.all()
+    paginate_by = 10
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        return context
+
+
 @login_required
 def upgrade_me(request):
     user = request.user
     author_group = Group.objects.get(name='authors')
     if not request.user.groups.filter(name='authors').exists():
         author_group.user_set.add(user)
-    return redirect('../')
+    return redirect('news')
+
+
+@login_required
+def subscribe_cat(request, category_id):
+    category = Category.objects.get(id=category_id)
+    user = request.user
+    if user not in category.subscribers.all():
+        category.subscribers.add(user)
+    else:
+        category.subscribers.remove(user)
+    return redirect('categories')
+
