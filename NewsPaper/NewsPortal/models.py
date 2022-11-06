@@ -75,7 +75,7 @@ class SubscribersCategory(models.Model):
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
 
     def __str__(self):
-        return f'{self.user.username}: {self.category.name}'
+        return f'{self.user.username}: {self.category.category_name}'
 
 
 class Comment(models.Model):

@@ -94,12 +94,11 @@ AUTHENTICATION_BACKENDS = [
     'allauth.account.auth_backends.AuthenticationBackend',
 ]
 
-ACCOUNT_EMAIL_VERIFICATION = ("mandatory")
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_UNIQUE_EMAIL = True
 ACCOUNT_USERNAME_REQUIRED = False
 ACCOUNT_AUTHENTICATION_METHOD = 'email'
-ACCOUNT_EMAIL_VERIFICATION = 'none'
+ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
 
 ACCOUNT_FORMS = {'signup': 'NewsPortal.forms.BasicSignupForm'}
 
@@ -175,3 +174,11 @@ EMAIL_HOST_PASSWORD = 'mheeddrvcyxxugfd'
 EMAIL_USE_TLS = False
 EMAIL_USE_SSL = True
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER + "@yandex.ru"
+
+
+# Celery Configuration Options
+CELERY_BROKER_URL = 'redis://:HL0Kky1jKx3PElXZHLu4vo4mTtBT853v@redis-17424.c250.eu-central-1-1.ec2.cloud.redislabs.com:17424/0'
+CELERY_RESULT_BACKEND = 'redis://:HL0Kky1jKx3PElXZHLu4vo4mTtBT853v@redis-17424.c250.eu-central-1-1.ec2.cloud.redislabs.com:17424/0'
+CELERY_ACCEPT_CONTENT = ['application/json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'

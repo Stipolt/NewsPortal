@@ -11,21 +11,7 @@ from django.template.loader import render_to_string
 from .models import Post, Category, PostCategory
 from .filters import NewsFilter
 from .forms import NewsForm
-
-
-def send_to_sub(post, email_subs):
-    html_content = render_to_string(
-        'send_mail_post.html',
-        {'post': post}
-    )
-    msg = EmailMultiAlternatives(
-        subject=f'{post.header} ',
-        body=f'{post.content}',
-        from_email='egorkabox@yandex.ru',
-        to=email_subs,
-    )
-    msg.attach_alternative(html_content, "text/html")
-    msg.send()
+from .tasks import send_to_sub
 
 
 class NewsList(ListView):

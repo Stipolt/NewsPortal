@@ -6,9 +6,8 @@
     <title>Document</title>
 </head>
 <body>
-    <h2>{{ post.header }}</h2>
+    <h2>{{ post_headers[0] }}</h2>
     <p> Здравствуй! Новая новость в твоём любимом разделе!</p>
     <p> {{ post.content | truncatechars:50 }} </p>
-
 </body>
 </html>
