@@ -5,6 +5,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMix
 from django.shortcuts import redirect
 from django.contrib.auth.models import Group
 from django.contrib.auth.decorators import login_required
+from django.core.cache import cache
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
 
@@ -45,6 +46,13 @@ class NewsDetail(DetailView):
         category_id = PostCategory.objects.filter(post_id=pk).values('category_id')[0]['category_id']
         context['category'] = Category.objects.values('category_name')[category_id-1]['category_name']
         return context
+
+    def get_object(self, *args, **kwargs):
+        obj = cache.get(f'post-{self.kwargs["pk"]}', None)
+        if not obj:
+            obj = super().get_object(queryset=self.queryset)
+            cache.set(f'post-{self.kwargs["pk"]}', obj)
+        return obj
 
 
 class NewsSearch(NewsList):
